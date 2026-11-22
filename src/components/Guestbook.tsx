@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { addNote, listNotes, visits, type Note } from "@/lib/supabase";
 import { unlock } from "@/lib/achievements";
-import { scratch } from "@/lib/sound";
+import { penDown, penMove, penUp } from "@/lib/sound";
 
 const NOTE_COLORS: Note["color"][] = ["mustard", "olive", "terracotta", "paper"];
 const PAD_W = 240, PAD_H = 120;
@@ -34,6 +34,7 @@ function DoodlePad({ onChange }: { onChange: (json: string | null) => void }) {
   useEffect(() => {
     const c = ref.current!;
     let cur: number[] | null = null;
+    let last = { x: 0, y: 0, t: 0 };
     const pos = (e: PointerEvent) => {
       const r = c.getBoundingClientRect();
       return [Math.round(((e.clientX - r.left) / r.width) * PAD_W), Math.round(((e.clientY - r.top) / r.height) * PAD_H)];
@@ -44,6 +45,8 @@ function DoodlePad({ onChange }: { onChange: (json: string | null) => void }) {
       c.setPointerCapture(e.pointerId);
       cur = pos(e);
       strokes.current.push(cur);
+      last = { x: e.clientX, y: e.clientY, t: e.timeStamp };
+      penDown();
     };
     const move = (e: PointerEvent) => {
       if (!cur || total() > 1400) return;
@@ -51,10 +54,12 @@ function DoodlePad({ onChange }: { onChange: (json: string | null) => void }) {
       const lx = cur[cur.length - 2], ly = cur[cur.length - 1];
       if (Math.abs(x - lx) + Math.abs(y - ly) < 2) return;
       cur.push(x, y);
-      scratch(0.15);
+      penMove(Math.hypot(e.clientX - last.x, e.clientY - last.y) / Math.max(1, e.timeStamp - last.t));
+      last = { x: e.clientX, y: e.clientY, t: e.timeStamp };
       draw();
     };
     const up = () => {
+      penUp();
       if (!cur) return;
       cur = null;
       const kept = strokes.current.filter((s) => s.length >= 4);

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { unlock } from "@/lib/achievements";
-import { scratch } from "@/lib/sound";
+import { penDown, penMove, penUp } from "@/lib/sound";
 
 type Stroke = { color: string; pts: number[] }; // x,y pairs in page coordinates
 
@@ -68,20 +68,28 @@ export function DrawMode() {
     addEventListener("scroll", redraw, { passive: true });
 
     let current: Stroke | null = null;
+    let last = { x: 0, y: 0, t: 0 };
     const down = (e: PointerEvent) => {
       if (!on) return;
       canvas.setPointerCapture(e.pointerId);
       current = { color: colorRef.current, pts: [e.clientX + scrollX, e.clientY + scrollY] };
       strokes.current.push(current);
+      last = { x: e.clientX, y: e.clientY, t: e.timeStamp };
+      penDown();
       unlock("doodler");
     };
     const move = (e: PointerEvent) => {
       if (!current) return;
       current.pts.push(e.clientX + scrollX, e.clientY + scrollY);
-      scratch(0.2);
+      const dt = Math.max(1, e.timeStamp - last.t);
+      penMove(Math.hypot(e.clientX - last.x, e.clientY - last.y) / dt);
+      last = { x: e.clientX, y: e.clientY, t: e.timeStamp };
       redraw();
     };
-    const up = () => (current = null);
+    const up = () => {
+      current = null;
+      penUp();
+    };
     canvas.addEventListener("pointerdown", down);
     canvas.addEventListener("pointermove", move);
     canvas.addEventListener("pointerup", up);
@@ -101,6 +109,7 @@ export function DrawMode() {
       canvas.removeEventListener("pointermove", move);
       canvas.removeEventListener("pointerup", up);
       canvas.removeEventListener("pointercancel", up);
+      penUp();
     };
   }, [on]);
 
