@@ -20,6 +20,7 @@ export const metadata: Metadata = {
     type: "website",
   },
   twitter: { card: "summary_large_image", title, description, images: ["/og.png"] },
+  verification: { google: "9nKPpkX1ZHYzt_Pz4TEKeFXTnLXPx15dGeQn8Za1Z9Y" },
   icons: { icon: "/favicon.svg" },
 };
 
