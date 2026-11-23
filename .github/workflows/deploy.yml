@@ -31,6 +31,8 @@ jobs:
         env:
           # read-only token GitHub gives every run; lifts the API rate limit for the sticky note
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # optional: itch.io API key for live views per game (Settings → Secrets → Actions)
+          ITCH_API_KEY: ${{ secrets.ITCH_API_KEY }}
           # public by design (row level security protects the data); set under
           # Settings → Secrets and variables → Actions → Variables
           NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}

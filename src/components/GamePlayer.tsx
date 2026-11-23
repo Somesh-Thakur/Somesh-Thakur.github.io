@@ -9,8 +9,9 @@ import { crunch } from "@/lib/sound";
  * (itch.io's embed), loaded only when asked so the page stays light.
  */
 export function GamePlayer({
-  uploadId, title, href, note, children,
+  uploadId, title, href, note, label = "Insert coin: play it here", children,
 }: {
+  label?: string;
   uploadId: number;
   title: string;
   href: string;
@@ -50,7 +51,7 @@ export function GamePlayer({
                 unlock("player");
               }}
             >
-              <span aria-hidden="true" className="coin-dot" /> Insert coin: play it here
+              <span aria-hidden="true" className="coin-dot" /> {label}
             </button>
             <span className="note player-note">{note}</span>
           </>

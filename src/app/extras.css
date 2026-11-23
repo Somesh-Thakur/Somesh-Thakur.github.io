@@ -175,3 +175,32 @@ kbd {
   .confetti { display: none; }
   .tabs a, .fab { transition: none; }
 }
+
+/* ───────── review fixes: build notes, workbench, smaller things, real counts ───────── */
+.hard-part { margin: 1.1em 0 1.4em; padding: 2px 0 2px 16px; border-left: 3px solid var(--mustard); max-width: 62ch; }
+.hard-part p { margin: 0 0 6px; }
+.hard-kicker { font-size: 1.55rem; line-height: 1; color: var(--terracotta); margin-bottom: 4px !important; }
+.hard-link { font-weight: 700; }
+.game-stat { font-size: 1.05rem; margin: -0.6em 0 0.4em; }
+.game-stat strong { font-family: var(--scrawl); font-size: 2rem; font-weight: 400; color: var(--terracotta); margin-right: 4px; }
+
+.shot.clip { padding-bottom: 12px; }
+.loop-clip { display: block; width: 100%; height: auto; aspect-ratio: 720 / 406; background: #2b2420; }
+
+.workbench-intro { max-width: 60ch; margin-top: 0.8em; }
+.bench { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(40px, 6vw, 72px) clamp(28px, 4vw, 56px); margin-top: clamp(32px, 5vw, 56px); }
+.bench-item { display: grid; gap: 18px; align-content: start; }
+.bench-shot { margin: 0 6px; }
+.bench-shot img { aspect-ratio: 16 / 9; object-fit: cover; }
+.bench-copy h3 { font-size: clamp(1.6rem, 1.3rem + 1vw, 2.1rem); margin: 0 0 2px; }
+.bench-copy > p { margin: 0 0 6px; }
+.bench-copy .hard-part { margin-bottom: 0; }
+@media (max-width: 820px) { .bench { grid-template-columns: 1fr; } }
+
+.more-list { list-style: none; padding: 0; margin: clamp(28px, 4vw, 44px) 0 0; display: grid; gap: 18px; max-width: 70ch; }
+.more-list li { display: grid; gap: 2px; padding-bottom: 14px; border-bottom: 1.5px dashed rgba(31, 27, 23, 0.22); }
+.more-list a { font-weight: 700; font-size: 1.2rem; width: fit-content; }
+
+.counts li { align-items: baseline; }
+.count-n { font-family: var(--scrawl); font-size: 2.3rem; font-weight: 400; line-height: 1; color: var(--terracotta); min-width: 2.4ch; }
+.counts-note { font-size: 0.85rem; color: var(--graphite); margin-top: 8px; }

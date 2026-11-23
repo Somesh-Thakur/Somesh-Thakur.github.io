@@ -6,17 +6,19 @@ import {
   Arrow, BloodOathSketch, BoomtownSketch, Icon, InkButton, RecordSketch, ReelSketch, Sparkle, Squiggle, Tick,
 } from "@/components/Doodles";
 import { GamePlayer } from "@/components/GamePlayer";
+import { LoopClip } from "@/components/LoopClip";
 import { BookmarkTabs } from "@/components/BookmarkTabs";
 import { DrawMode } from "@/components/DrawMode";
 import { Achievements, AchievementCount, SoundToggle } from "@/components/Achievements";
 import { Guestbook, VisitorCount } from "@/components/Guestbook";
-import { drawers, games, socials } from "@/lib/content";
+import { games, moreProjects, socials, workbench } from "@/lib/content";
 import { getActivity } from "@/lib/github";
+import { fmtCount, getStats } from "@/lib/stats";
 import { hasSupabase } from "@/lib/supabase";
 import "./page.css";
 
 const fmtDate = (iso: string) =>
-  new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "Asia/Kolkata" });
+  new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" });
 
 const spindleFeatures = [
   "Full songs, not previews",
@@ -33,35 +35,40 @@ const toonreelFeatures = [
   "No subscription, no watermark",
 ];
 
-const tools = ["TypeScript", "React", "Next.js", "Tailwind", "Python", "Supabase", "Tauri", "Electron", "GSAP"];
+const tools = ["Godot 4", "GDScript", "three.js", "TypeScript", "WebRTC", "React", "Supabase", "Tauri", "Python"];
 
-function Tally({ n }: { n: number }) {
-  // Hand-counted tally marks: groups of four strokes with a slash through.
-  const groups = Math.floor(n / 5);
-  const rest = n % 5;
-  const shapes: Parameters<typeof Sketch>[0]["shapes"] = [];
-  let x = 4;
-  for (let g = 0; g < groups + (rest ? 1 : 0); g++) {
-    const count = g < groups ? 4 : rest;
-    for (let i = 0; i < count; i++) shapes.push({ type: "line", x1: x + i * 8, y1: 6, x2: x + i * 8 + 1, y2: 34 });
-    if (g < groups) shapes.push({ type: "line", x1: x - 4, y1: 28, x2: x + 30, y2: 10, o: { stroke: "var(--terracotta)" } });
-    x += 46;
-  }
-  return <Sketch w={Math.max(60, x)} h={40} shapes={shapes} opts={{ stroke: "var(--ink)", strokeWidth: 2, seed: n }} className="tally" label={`${n}`} />;
+/** "The hard part" note under a project: what was actually difficult to build. */
+function HardPart({ children, href }: { children: React.ReactNode; href?: string | null }) {
+  return (
+    <div className="hard-part">
+      <p className="note hard-kicker">the hard part</p>
+      <p>{children}</p>
+      {href && <a className="hard-link" href={href}>Read how I built it</a>}
+    </div>
+  );
 }
 
 export default async function Home() {
-  const activity = await getActivity();
+  const [activity, stats] = await Promise.all([getActivity(), getStats()]);
+  const itchViews = Object.values(stats.itch).reduce((n, g) => n + g.views, 0);
+  const counts = [
+    stats.contributions != null && { n: stats.contributions, label: "GitHub contributions in the past year" },
+    itchViews > 0 && { n: itchViews, label: "views of my games on itch.io" },
+    stats.publicRepos != null && { n: stats.publicRepos, label: "public repos" },
+    { n: games.length + workbench.length, label: "games released or in development" },
+    stats.stars != null && stats.stars > 0 && { n: stats.stars, label: "stars on GitHub" },
+  ].filter(Boolean) as { n: number; label: string }[];
+
   const tabs = [
     { id: "games", label: "Games" },
+    { id: "workbench", label: "Workbench" },
     { id: "spindle", label: "Spindle" },
     { id: "toonreel", label: "ToonReel" },
-    { id: "projects", label: "Projects" },
-    { id: "about", label: "Me" },
+    { id: "about", label: "About me" },
     ...(hasSupabase ? [{ id: "guestbook", label: "Guestbook" }] : []),
     { id: "contact", label: "Say hi" },
   ];
-  const contactPage = hasSupabase ? 8 : 7;
+  const contactPage = hasSupabase ? 9 : 8;
 
   return (
     <>
@@ -89,8 +96,9 @@ export default async function Home() {
                 </span>
               </h1>
               <p className="lede hello-lede" data-appear="load" data-delay="1.6">
-                I make free games that run in your browser, on a PC or a phone, and the apps I wish
-                already existed. First-year CSE (Gaming Tech) student at SRM KTR.
+                I make games: a browser fighting game where your phone is the controller, an online
+                shooter in Godot with real netcode, and my own game engine. First-year CSE (Gaming
+                Tech) student at SRM KTR.
               </p>
               <div className="btns" data-appear="load" data-delay="2.0">
                 <InkButton href="#games" fill seed={3}>Play my games</InkButton>
@@ -128,47 +136,82 @@ export default async function Home() {
             Both run in the browser. No downloads, no accounts, <Mark kind="highlight">no ads</Mark>.
           </p>
           <div className="game-list">
-            {games.map((g, i) => (
-              <article key={g.id} className={`game game-${i}`}>
-                <div className="game-side">
-                  <div className="game-art">
-                    <span className="tape" style={{ top: -12, left: i ? "auto" : 24, right: i ? 24 : "auto", transform: `rotate(${i ? 5 : -6}deg)` }} />
-                    <GamePlayer uploadId={g.uploadId} title={g.title} href={g.href} note={g.playNote}>
-                      {g.id === "blood-oath" ? <BloodOathSketch /> : <BoomtownSketch />}
-                    </GamePlayer>
-                  </div>
-                  <div className="shots">
-                    {g.shots.map((s, k) => (
-                      <figure key={s} className="shot" style={{ ["--tilt" as string]: `${(k ? 3 : -2.5) * (i ? -1 : 1)}deg` }}>
+            {games.map((g, i) => {
+              const it = stats.itch[g.href.split("/").pop()!];
+              return (
+                <article key={g.id} className={`game game-${i}`}>
+                  <div className="game-side">
+                    <div className="game-art">
+                      <span className="tape" style={{ top: -12, left: i ? "auto" : 24, right: i ? 24 : "auto", transform: `rotate(${i ? 5 : -6}deg)` }} />
+                      <GamePlayer uploadId={g.uploadId} title={g.title} href={g.href} note={g.playNote} label={g.playLabel}>
+                        {g.id === "blood-oath" ? <BloodOathSketch /> : <BoomtownSketch />}
+                      </GamePlayer>
+                    </div>
+                    {g.clip ? (
+                      <figure className="shot clip" style={{ ["--tilt" as string]: "-1.2deg" }}>
                         <span className="tape tape-sm" />
-                        <img src={s} alt={`${g.title} screenshot ${k + 1}`} width={347} height={195} loading="lazy" decoding="async" />
+                        <LoopClip src={g.clip.src} poster={g.clip.poster} label={`${g.title} gameplay: two fighters trading weapon strikes`} />
                       </figure>
-                    ))}
+                    ) : (
+                      <div className="shots">
+                        {g.shots.map((s, k) => (
+                          <figure key={s} className="shot" style={{ ["--tilt" as string]: `${(k ? 3 : -2.5) * (i ? -1 : 1)}deg` }}>
+                            <span className="tape tape-sm" />
+                            <img src={s} alt={`${g.title} screenshot ${k + 1}`} width={347} height={195} loading="lazy" decoding="async" />
+                          </figure>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                </div>
-                <div className="game-copy">
-                  <h3 data-write>{g.title}</h3>
-                  <p>{g.line}</p>
-                  <ul className="tags" aria-label="Tags">
-                    {g.tags.map((t, k) => (
-                      <li key={t}><Mark kind="circle" color={["var(--olive)", "var(--mustard)", "var(--terracotta)"][k % 3]} seed={k + i * 5} delay={0.3 + k * 0.2}>{t}</Mark></li>
-                    ))}
-                  </ul>
-                  <InkButton href={g.href} fill seed={10 + i} external>Play on itch.io</InkButton>
+                  <div className="game-copy">
+                    <h3 data-write>{g.title}</h3>
+                    <p>{g.line}</p>
+                    <ul className="tags" aria-label="Tags">
+                      {g.tags.map((t, k) => (
+                        <li key={t}><Mark kind="circle" color={["var(--olive)", "var(--mustard)", "var(--terracotta)"][k % 3]} seed={k + i * 5} delay={0.3 + k * 0.2}>{t}</Mark></li>
+                      ))}
+                    </ul>
+                    {it && it.views > 0 && (
+                      <p className="game-stat"><strong>{fmtCount(it.views)}</strong> views on itch.io</p>
+                    )}
+                    {g.built && <HardPart href={g.caseStudy}>{g.built}</HardPart>}
+                    <InkButton href={g.href} fill seed={10 + i} external>Play on itch.io</InkButton>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* ───────── p.3 workbench: bigger games in development ───────── */}
+        <section className="page workbench" id="workbench" aria-labelledby="workbench-title">
+          <span className="folio">p. 3</span>
+          <h2 id="workbench-title" data-write>On the workbench</h2>
+          <p className="lede workbench-intro">
+            Bigger games I&apos;m building in Godot and in my own engine. They&apos;re still in development,
+            so the code is private for now. Ask me and I&apos;ll show you.
+          </p>
+          <div className="bench">
+            {workbench.map((w, i) => (
+              <article key={w.id} className="bench-item">
+                <figure className="shot bench-shot" style={{ ["--tilt" as string]: `${i % 2 ? 1.6 : -1.8}deg` }}>
+                  <span className="tape tape-sm" />
+                  <img src={w.shot} alt={w.alt} width={960} height={540} loading="lazy" decoding="async" />
+                </figure>
+                <div className="bench-copy">
+                  <h3>{w.title}</h3>
+                  <p className="card-stack">{w.engine}</p>
+                  <p>{w.what}</p>
+                  <HardPart>{w.hard}</HardPart>
                 </div>
               </article>
             ))}
           </div>
-          <p className="note games-more">
-            more on the way. follow along on{" "}
-            <a href="https://www.youtube.com/@Mark60a2" target="_blank" rel="noopener noreferrer">YouTube</a> and{" "}
-            <a href="https://discord.gg/kr4euTBVzt" target="_blank" rel="noopener noreferrer">Discord</a>
-          </p>
         </section>
 
-        {/* ───────── p.3 spindle ───────── */}
+        {/* ───────── p.4 spindle ───────── */}
         <section className="page spindle" id="spindle" aria-labelledby="spindle-title">
-          <span className="folio">p. 3</span>
+          <span className="folio">p. 4</span>
           <div className="spindle-grid">
             <div>
               <h2 id="spindle-title" data-write>Spindle</h2>
@@ -182,6 +225,10 @@ export default async function Home() {
                 ))}
               </ul>
               <p className="note stack-note">made with React, Supabase and Tauri</p>
+              <HardPart href="/work/spindle/">
+                Keeping one library in sync across a phone, a browser and a desktop app. Each device sends only
+                what changed, the database merges entry by entry, and the other devices get told to pull.
+              </HardPart>
               <div className="btns">
                 <InkButton href="https://someshthakur.tech/spindle/" fill seed={14} external>Open Spindle</InkButton>
                 <InkButton href="https://github.com/Somesh-Thakur/spindle" seed={15} external>Read the code</InkButton>
@@ -191,9 +238,9 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* ───────── p.4 toonreel ───────── */}
+        {/* ───────── p.5 toonreel ───────── */}
         <section className="page spindle toonreel" id="toonreel" aria-labelledby="toonreel-title">
-          <span className="folio">p. 4</span>
+          <span className="folio">p. 5</span>
           <div className="spindle-grid">
             <ReelSketch />
             <div>
@@ -209,6 +256,10 @@ export default async function Home() {
                 ))}
               </ul>
               <p className="note stack-note">works with Claude Code, Codex, Gemini CLI and Cursor</p>
+              <HardPart href="/work/toonreel/">
+                Text-to-speech mangles Hindi and English mixed together. So before rendering, every line is
+                voiced and transcribed back with Whisper, and any word that comes back wrong gets reworded.
+              </HardPart>
               <div className="btns">
                 <InkButton href="https://someshthakur.tech/toonreel/" fill seed={16} external>Try the studio</InkButton>
                 <InkButton href="https://github.com/Somesh-Thakur/toonreel" seed={17} external>Read the code</InkButton>
@@ -217,11 +268,14 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* ───────── p.5 everything else ───────── */}
+        {/* ───────── p.6 smaller things ───────── */}
         <section className="page drawer" id="projects" aria-labelledby="projects-title">
-          <span className="folio">p. 5</span>
+          <span className="folio">p. 6</span>
           <div className="drawer-head">
-            <h2 id="projects-title" data-write>Everything else in the drawer</h2>
+            <div>
+              <h2 id="projects-title" data-write>Smaller things</h2>
+              <p className="lede">Tools I made because I needed them.</p>
+            </div>
             <aside className="sticky sticky-mustard now-note" aria-label="What I'm working on right now">
               <span className="tape tape-sm" />
               <p className="now-kicker">Right now</p>
@@ -242,33 +296,23 @@ export default async function Home() {
               )}
             </aside>
           </div>
-          {drawers.map((d, di) => (
-            <div key={d.name} className="shelf">
-              <div className="shelf-head">
-                <h3 data-write>{d.name}</h3>
-                <span className="note">{d.note}</span>
-              </div>
-              <div className="cards">
-                {d.items.map((p, i) => (
-                  <article key={p.title} className="card" style={{ ["--tilt" as string]: `${((i + di) % 3 - 1) * 0.8}deg` }}>
-                    <h4>{p.title}</h4>
-                    <p>{p.what}</p>
-                    <p className="card-stack">{p.stack}</p>
-                    <p className="card-links">
-                      {p.live && <a href={p.live} target="_blank" rel="noopener noreferrer">Open it</a>}
-                      {p.code && <a href={p.code} target="_blank" rel="noopener noreferrer">Code</a>}
-                    </p>
-                  </article>
-                ))}
-              </div>
-            </div>
-          ))}
+          <ul className="more-list">
+            {moreProjects.map((p) => (
+              <li key={p.title}>
+                <a href={p.href} target="_blank" rel="noopener noreferrer">{p.title}</a>
+                <span>{p.what}</span>
+              </li>
+            ))}
+          </ul>
+          <div className="btns">
+            <InkButton href="https://github.com/Somesh-Thakur?tab=repositories" seed={19} external>Everything else on GitHub</InkButton>
+          </div>
         </section>
 
-        {/* ───────── p.5 character sheet ───────── */}
+        {/* ───────── p.7 character sheet ───────── */}
         <section className="page sheet" id="about" aria-labelledby="about-title">
-          <span className="folio">p. 6</span>
-          <h2 id="about-title" data-write>Character sheet</h2>
+          <span className="folio">p. 7</span>
+          <h2 id="about-title" data-write>About me: character sheet</h2>
           <div className="sheet-box">
             <Sketch
               w={1000} h={600} stretch className="sheet-frame"
@@ -278,7 +322,7 @@ export default async function Home() {
             <dl className="sheet-top">
               <div><dt>Name</dt><dd>Somesh Sanjay Thakur</dd></div>
               <div><dt>Also known as</dt><dd>Mark60a2</dd></div>
-              <div><dt>Class</dt><dd>Full-stack dev, game maker</dd></div>
+              <div><dt>Class</dt><dd>Game developer</dd></div>
               <div><dt>Level</dt><dd>1st year</dd></div>
             </dl>
             <Sketch
@@ -291,7 +335,10 @@ export default async function Home() {
                 <h3>Guild</h3>
                 <p>SRM Institute of Science and Technology, Kattankulathur. B.Tech CSE with a specialisation in Gaming Technology.</p>
                 <h3>Usually found</h3>
-                <p>Somewhere between UX and LLMs: reactive web apps, small automations that run on their own, and games for game night.</p>
+                <p>
+                  Making games for game night, and the hard parts underneath them: netcode, physics,
+                  shaders and engines. When I need a tool that doesn&apos;t exist, I build that too.
+                </p>
               </div>
               <div>
                 <h3>Inventory</h3>
@@ -302,22 +349,29 @@ export default async function Home() {
                 </ul>
                 <h3>Counted so far</h3>
                 <ul className="counts">
-                  <li><Tally n={activity?.publicRepos ?? 24} /><span>public repos</span></li>
-                  <li><Tally n={2} /><span>games on itch.io</span></li>
-                  <li><Tally n={3} /><span>platforms Spindle runs on</span></li>
+                  {counts.map((c) => (
+                    <li key={c.label}>
+                      <strong className="count-n">{fmtCount(c.n)}</strong>
+                      <span>{c.label}</span>
+                    </li>
+                  ))}
                 </ul>
+                <p className="counts-note">updated every morning from GitHub{itchViews > 0 && " and itch.io"}</p>
               </div>
             </div>
             <Sparkle className="sheet-spark" />
           </div>
         </section>
 
-        {/* ───────── p.6 guestbook (only when Supabase is connected) ───────── */}
+        {/* ───────── p.8 guestbook (only when Supabase is connected) ───────── */}
         {hasSupabase && (
           <section className="page guest" id="guestbook" aria-labelledby="guest-title">
-            <span className="folio">p. 7</span>
+            <span className="folio">p. 8</span>
             <h2 id="guest-title" data-write>Sign the guestbook</h2>
-            <p className="lede">Leave a note, a doodle, or both. It sticks to this page for everyone to see.</p>
+            <p className="lede">
+              Leave a note, a doodle, or both. It sticks to this page for everyone to see. I read every
+              note, and anything rude gets taken down.
+            </p>
             <Guestbook />
           </section>
         )}
