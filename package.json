@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "npx serve out",
-    "resume": "\"C:/Program Files/Google/Chrome/Application/chrome.exe\" --headless=new --no-pdf-header-footer --print-to-pdf=resume/Somesh-Thakur-Resume.pdf resume/resume.html"
+    "resume": "\"C:/Program Files/Google/Chrome/Application/chrome.exe\" --headless=new --no-pdf-header-footer --print-to-pdf=resume/Somesh-Thakur-Resume.pdf resume/resume.html && cp resume/Somesh-Thakur-Resume.pdf public/"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",

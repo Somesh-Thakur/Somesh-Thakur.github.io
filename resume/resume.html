@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Somesh Thakur – Resume</title>
+<!-- Source for public/resume.pdf. Rebuild with: npm run resume -->
+<style>
+  @font-face { font-family: "Shantell"; src: url("../public/fonts/shantell-latin.woff2") format("woff2"); font-weight: 300 800; }
+  @page { size: A4; margin: 13mm 15mm; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 9.6pt/1.42 "Segoe UI", Arial, sans-serif; color: #1f1b17; }
+  h1 { font: 700 24pt/1 "Shantell", "Segoe UI", sans-serif; margin: 0; }
+  .role { font-weight: 600; font-size: 11pt; margin: 3px 0 4px; color: #c8683a; }
+  .contact { margin: 0; color: #3b352e; }
+  .contact a { color: inherit; text-decoration: none; }
+  h2 { font: 700 10.5pt/1 "Segoe UI", Arial, sans-serif; letter-spacing: 0.02em; margin: 12px 0 5px; padding-bottom: 3px; border-bottom: 1.5px solid #d4a537; }
+  .item { margin: 0 0 7px; break-inside: avoid; }
+  .head { display: flex; justify-content: space-between; gap: 12px; }
+  .head strong { font-size: 10pt; }
+  .head span { color: #5f5a52; white-space: nowrap; }
+  .tech { color: #5f5a52; font-size: 8.8pt; margin: 0; }
+  ul { margin: 2px 0 0; padding-left: 15px; }
+  li { margin: 1px 0; }
+  p { margin: 0; }
+  .skills p { margin: 1px 0; }
+  .skills b { display: inline-block; min-width: 132px; }
+</style>
+</head>
+<body>
+  <h1>Somesh Sanjay Thakur</h1>
+  <p class="role">Game developer: netcode, engines, multiplayer</p>
+  <p class="contact">
+    <a href="mailto:someshrthakur@gmail.com">someshrthakur@gmail.com</a> &nbsp;|&nbsp;
+    <a href="https://someshthakur.tech">someshthakur.tech</a> &nbsp;|&nbsp;
+    <a href="https://github.com/Somesh-Thakur">github.com/Somesh-Thakur</a> &nbsp;|&nbsp;
+    <a href="https://mark60a2.itch.io">mark60a2.itch.io</a> &nbsp;|&nbsp;
+    <a href="https://www.linkedin.com/in/somesh-thakur-30r07/">linkedin.com/in/somesh-thakur-30r07</a>
+  </p>
+
+  <h2>Education</h2>
+  <div class="item">
+    <div class="head"><strong>B.Tech Computer Science and Engineering, specialisation in Gaming Technology</strong><span>2026 – present</span></div>
+    <p>SRM Institute of Science and Technology, Kattankulathur, Chennai. First year.</p>
+  </div>
+
+  <h2>Games</h2>
+  <div class="item">
+    <div class="head"><strong>Blood Oath: browser fighting game with phones as controllers</strong><span>released on itch.io</span></div>
+    <p class="tech">TypeScript, three.js, WebRTC, WebSocket</p>
+    <ul>
+      <li>8 fighters, fatalities, 2v2 tag and a 10-person party lobby; any phone becomes a controller by scanning a QR code, no app.</li>
+      <li>Wrote GGPO-style rollback netcode over WebRTC on a deterministic 60 Hz integer simulation, with checksums to catch desyncs.</li>
+      <li>Fixed phones failing on laptop hotspots by routing input through a local WebSocket relay; whole game is 240 KB gzipped.</li>
+    </ul>
+  </div>
+  <div class="item">
+    <div class="head"><strong>STRIKEPOINT: online FPS</strong><span>in development</span></div>
+    <p class="tech">Godot 4.7, GDScript, ENet, WebRTC</p>
+    <ul>
+      <li>Host-authoritative netcode with client prediction, reconciliation and interpolation; lag-compensated hit checks that rewind players to what the shooter saw.</li>
+      <li>Learnable recoil patterns, spread cones, ADS, head/body/leg hitboxes; runs on web, PC and Android.</li>
+    </ul>
+  </div>
+  <div class="item">
+    <div class="head"><strong>Mark Engine: web game engine for AI agents</strong><span>in development</span></div>
+    <p class="tech">TypeScript, three.js, MCP</p>
+    <ul>
+      <li>Games are YAML data plus small scripts; rendering, physics, character controller, audio, UI and export are built in.</li>
+      <li>Built Landfall, a third-person shooter demo with enemy AI that alerts allies, keeps distance and fires in bursts; an MCP server lets agents play-test games headlessly.</li>
+    </ul>
+  </div>
+  <div class="item">
+    <div class="head"><strong>Triora and Coastline Drift</strong><span>in development</span></div>
+    <p class="tech">Godot 4.7, Jolt physics, GDShader</p>
+    <ul>
+      <li>Triora: 1–4 player co-op sailing game; a Gerstner wave shader and CPU buoyancy share the same maths so the ship rides the visible waves; UDP co-op; headless smoke tests.</li>
+      <li>Coastline Drift: open-world drifting game on a 2 km procedurally built island with 10 custom shaders and per-device steering for keyboard, gamepad and racing wheels.</li>
+    </ul>
+  </div>
+
+  <h2>Apps and tools</h2>
+  <div class="item">
+    <div class="head"><strong>Spindle: music player synced across phone, web and Windows</strong><span>live</span></div>
+    <p class="tech">React, TypeScript, Supabase (Postgres, Auth, Realtime), Tauri 2</p>
+    <ul>
+      <li>Per-entry merge sync: devices send only what changed, the database merges newest-wins, Realtime tells other devices to pull.</li>
+      <li>Live lyrics with a switch that romanises 9 Indian languages; desktop app is a Tauri window using about 10 MB for its own code.</li>
+    </ul>
+  </div>
+  <div class="item">
+    <div class="head"><strong>ToonReel: script to cartoon reel, open source</strong><span>live</span></div>
+    <p class="tech">Remotion, three.js, Python, faster-whisper, ffmpeg</p>
+    <ul>
+      <li>Turns a JSON skit into a lip-synced 1080×1920 reel; used to make 11 reels for a Pune real-estate business.</li>
+      <li>Whisper checks every voiced line before rendering to catch mispronounced Hinglish.</li>
+    </ul>
+  </div>
+
+  <h2>Skills</h2>
+  <div class="skills">
+    <p><b>Engines and graphics</b>Godot 4 (GDScript, GDShader), three.js, my own web engine, Remotion</p>
+    <p><b>Multiplayer</b>Rollback netcode, client prediction, lag compensation, WebRTC, WebSocket, ENet</p>
+    <p><b>Languages</b>TypeScript, JavaScript, GDScript, Python, SQL</p>
+    <p><b>Apps and tools</b>React, Next.js, Supabase, Tauri, Vite, Git, GitHub Actions</p>
+  </div>
+</body>
+</html>

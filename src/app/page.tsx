@@ -102,7 +102,7 @@ export default async function Home() {
               </p>
               <div className="btns" data-appear="load" data-delay="2.0">
                 <InkButton href="#games" fill seed={3}>Play my games</InkButton>
-                <InkButton href="#contact" seed={6}>Say hi</InkButton>
+                <InkButton href="/Somesh-Thakur-Resume.pdf" seed={6} external>Resume (PDF)</InkButton>
               </div>
             </div>
 
@@ -380,7 +380,10 @@ export default async function Home() {
         <section className="page contact" id="contact" aria-labelledby="contact-title">
           <span className="folio">p. {contactPage}</span>
           <h2 id="contact-title" data-write>Come say hi</h2>
-          <p className="lede">Playtesting, collabs, internships, or just a game you think I&apos;d like. Pick a door.</p>
+          <p className="lede">
+            Playtesting, collabs, internships, or just a game you think I&apos;d like. Pick a door, or grab
+            my <a href="/Somesh-Thakur-Resume.pdf" target="_blank" rel="noopener noreferrer">resume (PDF)</a>.
+          </p>
           <ul className="doors">
             {socials.map((s, i) => (
               <li key={s.id}>
