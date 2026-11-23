@@ -3,7 +3,7 @@ import { PencilTrail } from "@/components/PencilTrail";
 import { Crumple } from "@/components/Crumple";
 import { Mark, Sketch } from "@/components/Sketch";
 import {
-  Arrow, BloodOathSketch, BoomtownSketch, Icon, InkButton, RecordSketch, Sparkle, Squiggle, Tick,
+  Arrow, BloodOathSketch, BoomtownSketch, Icon, InkButton, RecordSketch, ReelSketch, Sparkle, Squiggle, Tick,
 } from "@/components/Doodles";
 import { GamePlayer } from "@/components/GamePlayer";
 import { BookmarkTabs } from "@/components/BookmarkTabs";
@@ -23,6 +23,14 @@ const spindleFeatures = [
   "Live lyrics, Hinglish included",
   "Karaoke mode",
   "Playlists that sync across phone, PC and web",
+];
+
+const toonreelFeatures = [
+  "Write a skit, get a 1080×1920 reel",
+  "Blocky 3D or flat 2D characters, lip-synced",
+  "Free voices in 400+ languages, Hindi and Hinglish too",
+  "Word-by-word captions, crowds and quizzes",
+  "No subscription, no watermark",
 ];
 
 const tools = ["TypeScript", "React", "Next.js", "Tailwind", "Python", "Supabase", "Tauri", "Electron", "GSAP"];
@@ -47,12 +55,13 @@ export default async function Home() {
   const tabs = [
     { id: "games", label: "Games" },
     { id: "spindle", label: "Spindle" },
+    { id: "toonreel", label: "ToonReel" },
     { id: "projects", label: "Projects" },
     { id: "about", label: "Me" },
     ...(hasSupabase ? [{ id: "guestbook", label: "Guestbook" }] : []),
     { id: "contact", label: "Say hi" },
   ];
-  const contactPage = hasSupabase ? 7 : 6;
+  const contactPage = hasSupabase ? 8 : 7;
 
   return (
     <>
@@ -182,9 +191,35 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* ───────── p.4 everything else ───────── */}
-        <section className="page drawer" id="projects" aria-labelledby="projects-title">
+        {/* ───────── p.4 toonreel ───────── */}
+        <section className="page spindle toonreel" id="toonreel" aria-labelledby="toonreel-title">
           <span className="folio">p. 4</span>
+          <div className="spindle-grid">
+            <ReelSketch />
+            <div>
+              <h2 id="toonreel-title" data-write>ToonReel</h2>
+              <p className="lede">
+                Write a skit, get a cartoon reel. ToonReel is a free, open-source skill for AI agents like
+                Claude Code that turns a script into a lip-synced 3D or 2D cartoon for Instagram Reels,
+                YouTube Shorts and TikTok. It runs on your own computer.
+              </p>
+              <ul className="checklist">
+                {toonreelFeatures.map((f, i) => (
+                  <li key={f}><Tick delay={i * 0.25} /><span>{f}</span></li>
+                ))}
+              </ul>
+              <p className="note stack-note">works with Claude Code, Codex, Gemini CLI and Cursor</p>
+              <div className="btns">
+                <InkButton href="https://someshthakur.tech/toonreel/" fill seed={16} external>Try the studio</InkButton>
+                <InkButton href="https://github.com/Somesh-Thakur/toonreel" seed={17} external>Read the code</InkButton>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ───────── p.5 everything else ───────── */}
+        <section className="page drawer" id="projects" aria-labelledby="projects-title">
+          <span className="folio">p. 5</span>
           <div className="drawer-head">
             <h2 id="projects-title" data-write>Everything else in the drawer</h2>
             <aside className="sticky sticky-mustard now-note" aria-label="What I'm working on right now">
@@ -232,7 +267,7 @@ export default async function Home() {
 
         {/* ───────── p.5 character sheet ───────── */}
         <section className="page sheet" id="about" aria-labelledby="about-title">
-          <span className="folio">p. 5</span>
+          <span className="folio">p. 6</span>
           <h2 id="about-title" data-write>Character sheet</h2>
           <div className="sheet-box">
             <Sketch
@@ -280,7 +315,7 @@ export default async function Home() {
         {/* ───────── p.6 guestbook (only when Supabase is connected) ───────── */}
         {hasSupabase && (
           <section className="page guest" id="guestbook" aria-labelledby="guest-title">
-            <span className="folio">p. 6</span>
+            <span className="folio">p. 7</span>
             <h2 id="guest-title" data-write>Sign the guestbook</h2>
             <p className="lede">Leave a note, a doodle, or both. It sticks to this page for everyone to see.</p>
             <Guestbook />

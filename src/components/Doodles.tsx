@@ -148,6 +148,52 @@ export function RecordSketch() {
   );
 }
 
+/** A phone held upright, playing a cartoon reel: blocky character, speech bubble, captions. */
+export function ReelSketch() {
+  return (
+    <div className="reel">
+      <Sketch
+        w={300} h={420}
+        shapes={[
+          // film strip running out from both sides of the phone
+          { type: "poly", pts: [[78, 150], [12, 154], [10, 222], [78, 220]], o: { stroke: GRAPHITE, strokeWidth: 1.2 } },
+          { type: "poly", pts: [[226, 150], [290, 146], [292, 216], [226, 220]], o: { stroke: GRAPHITE, strokeWidth: 1.2 } },
+          ...[0, 1].flatMap((i): Shape[] => [
+            { type: "rect", x: 22 + i * 30, y: 160, w: 14, h: 9, o: { stroke: GRAPHITE, strokeWidth: 1 } },
+            { type: "rect", x: 22 + i * 30, y: 204, w: 14, h: 9, o: { stroke: GRAPHITE, strokeWidth: 1 } },
+            { type: "rect", x: 238 + i * 30, y: 156, w: 14, h: 9, o: { stroke: GRAPHITE, strokeWidth: 1 } },
+            { type: "rect", x: 238 + i * 30, y: 200, w: 14, h: 9, o: { stroke: GRAPHITE, strokeWidth: 1 } },
+          ]),
+          // phone
+          { type: "rect", x: 82, y: 22, w: 140, h: 268, o: { stroke: INK, strokeWidth: 2.6, fill: "var(--paper)", fillStyle: "solid" } },
+          { type: "line", x1: 136, y1: 36, x2: 168, y2: 36, o: { stroke: INK, strokeWidth: 2 } },
+          // the character: blocky head, eyes, talking mouth, body
+          { type: "rect", x: 122, y: 118, w: 52, h: 48, o: { stroke: INK, fill: MUSTARD, fillStyle: "hachure", hachureGap: 5 } },
+          { type: "ellipse", cx: 138, cy: 136, w: 7, h: 7, o: { stroke: INK, fill: INK, fillStyle: "solid" } },
+          { type: "ellipse", cx: 158, cy: 136, w: 7, h: 7, o: { stroke: INK, fill: INK, fillStyle: "solid" } },
+          { type: "ellipse", cx: 148, cy: 153, w: 14, h: 8, o: { stroke: TERRA, strokeWidth: 2 } },
+          { type: "rect", x: 116, y: 168, w: 64, h: 62, o: { stroke: INK, fill: OLIVE, fillStyle: "hachure", hachureGap: 6 } },
+          { type: "line", x1: 116, y1: 180, x2: 100, y2: 160, o: { stroke: INK, strokeWidth: 2.2 } },
+          { type: "line", x1: 180, y1: 180, x2: 198, y2: 196, o: { stroke: INK, strokeWidth: 2.2 } },
+          // speech bubble
+          { type: "ellipse", cx: 168, cy: 76, w: 82, h: 44, o: { stroke: INK, strokeWidth: 1.8 } },
+          { type: "poly", pts: [[150, 96], [142, 112], [162, 97]], o: { stroke: INK, strokeWidth: 1.8 } },
+          { type: "line", x1: 146, y1: 72, x2: 190, y2: 72, o: { stroke: GRAPHITE, strokeWidth: 1.2 } },
+          { type: "line", x1: 150, y1: 82, x2: 182, y2: 82, o: { stroke: GRAPHITE, strokeWidth: 1.2 } },
+          // captions
+          { type: "line", x1: 104, y1: 252, x2: 200, y2: 252, o: { stroke: TERRA, strokeWidth: 3 } },
+          { type: "line", x1: 118, y1: 266, x2: 186, y2: 266, o: { stroke: INK, strokeWidth: 2.2 } },
+          // play button below the phone
+          { type: "ellipse", cx: 152, cy: 350, w: 64, h: 64, o: { stroke: INK, strokeWidth: 2 } },
+          { type: "poly", pts: [[142, 334], [142, 366], [168, 350], [142, 334]], o: { stroke: TERRA, fill: TERRA, fillStyle: "hachure", hachureGap: 4 } },
+        ]}
+        opts={{ seed: 21 }}
+        label="Sketch of a phone playing a cartoon reel"
+      />
+    </div>
+  );
+}
+
 /* ───── tiny doodles ───── */
 
 export function Arrow({ d = "down", className, delay }: { d?: "down" | "left" | "right" | "curl"; className?: string; delay?: number }) {
